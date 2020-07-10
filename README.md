@@ -1,1 +1,1 @@
-# ascii-maze
+#[ModKit Wiki](../../wiki)
