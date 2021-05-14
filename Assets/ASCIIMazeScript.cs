@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Linq;
+using AsciiMaze;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -56,6 +57,7 @@ public class ASCIIMazeScript : MonoBehaviour
 
     private static int moduleIDCounter = 1;
     private int moduleID;
+    private bool solved;
 
     private void Awake()
     {
@@ -324,6 +326,7 @@ public class ASCIIMazeScript : MonoBehaviour
         if (current[0] == exit[0] && current[1] == exit[1])
         {
             module.HandlePass();
+            solved = true;
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
             foreach (Renderer a in arrowon)
                 a.material = ledcols[0];
@@ -410,4 +413,32 @@ public class ASCIIMazeScript : MonoBehaviour
         else
             yield return "sendtochaterror Too many parameters";
     }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        if (current.SequenceEqual(exit))
+        {
+            submit[0].OnInteract();
+            while (!solved)
+            {
+                yield return true;
+            }
+            yield break;
+        }
+
+        var mazeSolver = new MazeSolver(maze);
+        var mazeSolution = mazeSolver.SolveMaze(current, exit);
+        
+        foreach (var inst in mazeSolution)
+        {
+            arrows["lurd".IndexOf(inst)].OnInteract();
+            yield return new WaitForSeconds(.1f);
+        }
+        submit[0].OnInteract();
+        while (!solved)
+        {
+            yield return true;
+        }
+    }
+
 }
