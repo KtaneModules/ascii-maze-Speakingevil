@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Linq;
-using AsciiMaze;
 using UnityEngine;
+using AsciiMaze;
 using Random = UnityEngine.Random;
 
 public class ASCIIMazeScript : MonoBehaviour
@@ -326,12 +326,14 @@ public class ASCIIMazeScript : MonoBehaviour
         if (current[0] == exit[0] && current[1] == exit[1])
         {
             module.HandlePass();
-            solved = true;
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
             foreach (Renderer a in arrowon)
                 a.material = ledcols[0];
             foreach (Renderer l in leds)
                 l.material = ledcols[0];
+            if (cb)
+                foreach (TextMesh c in cbtexts)
+                    c.text = string.Empty;
             display.text = "CORRECT";
             display.color = new Color32(0, 255, 0, 255);
             Debug.LogFormat("[ASCII Maze #{0}] Exit found.", moduleID);
@@ -428,7 +430,7 @@ public class ASCIIMazeScript : MonoBehaviour
 
         var mazeSolver = new MazeSolver(maze);
         var mazeSolution = mazeSolver.SolveMaze(current, exit);
-        
+
         foreach (var inst in mazeSolution)
         {
             arrows["lurd".IndexOf(inst)].OnInteract();
